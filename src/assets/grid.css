@@ -1,0 +1,111 @@
+table {
+  width: 100%;
+  border-left: 1px solid transparent;
+  border-top: 1px solid transparent;
+  border-bottom: none;
+  font-size: 12px;
+  border-radius: 6px;
+  overflow: hidden;
+}
+table th {
+  text-align: right;
+  border: 1px solid #f1f1f8;
+  border-right: none;
+}
+table th h3 {
+  font-size: 10px;
+  padding: 6px 8px 8px;
+}
+table td {
+  text-align: right;
+  padding: 4px 6px 6px;
+  border-bottom: 1px solid #c6d5e1;
+  border-right: 1px solid #c6d5e1;
+}
+table .head h3 {
+  cursor: pointer;
+  padding-left: 18px;
+}
+table .desc h3 {
+  cursor: pointer;
+  padding-left: 18px;
+}
+table .asc h3 {
+  cursor: pointer;
+  padding-left: 18px;
+}
+table .head:hover,
+table .desc:hover,
+table .asc:hover {
+  color: #fff;
+}
+
+table tfoot {
+  background: #fff;
+  font-weight: bold;
+}
+table tfoot td {
+  padding: 6px 8px 8px;
+}
+
+table thead {
+  height: 56px;
+  background-color: #00b6cd;
+  color: #fff;
+}
+
+table thead th {
+  position: relative;
+}
+
+table thead tr th h3 {
+  font-size: 14px !important;
+  font-weight: bold;
+}
+
+table tbody tr:nth-child(2n + 1) {
+  background-color: #f1f1f8;
+}
+
+table tbody tr:nth-child(2n + 2) {
+  background-color: #fff;
+}
+
+.favorite-row {
+  background-color: #00b6cd !important;
+  color: #fff;
+  font-weight: bold;
+}
+
+.arrow-up {
+  position: absolute;
+  top: 50%;
+  left: 5px;
+  transform: translate(0, -50%);
+  width: 0;
+  height: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-bottom: 5px solid #fff;
+}
+
+.arrow-down {
+  position: absolute;
+  top: 50%;
+  left: 5px;
+  transform: translate(0, -50%);
+  width: 0;
+  height: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-top: 5px solid #fff;
+}
+
+@media screen and (max-width: 992px) {
+  .table-container {
+    width: calc(100vw - 32px);
+    overflow-x: auto;
+    overflow-y: visible;
+    padding-bottom: 50px;
+  }
+}
