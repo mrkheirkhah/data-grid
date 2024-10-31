@@ -5,11 +5,11 @@ This is an interview task requesteed by Exploria company!!!
 ## Run And Preview
 
 ```sh
-npm install
+yarn
 ```
 
 ```sh
-npm run start
+yarn start
 ```
 
 Now open your favorite browser and navigate to localhost:5050 and enjoy!
@@ -17,23 +17,29 @@ Now open your favorite browser and navigate to localhost:5050 and enjoy!
 ## Project Setup
 
 ```sh
-npm install
+yarn
+```
+
+### START DATA SERVER
+
+```sh
+yarn serve_data
 ```
 
 ### Compile and Hot-Reload for Development
 
 ```sh
-npm run dev
+yarn dev
 ```
 
 ### Compile and Minify for Production
 
 ```sh
-npm run build
+yarn build
 ```
 
 ### Lint with [ESLint](https://eslint.org/)
 
 ```sh
-npm run lint
+yarn lint
 ```
