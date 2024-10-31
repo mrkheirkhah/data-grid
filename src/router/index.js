@@ -9,6 +9,16 @@ const router = createRouter({
       name: 'home',
       component: HomeView
     },
+    {
+      path: '/infiniteScrollView',
+      name: 'infiniteScrollView',
+      component: () => import('../views/InfiniteScrollView.vue')
+    },
+    {
+      path: '/paginationView',
+      name: 'paginationView',
+      component: () => import('../views/PaginationView.vue')
+    },
   ]
 })
 
