@@ -1,4 +1,4 @@
 #!/usr/bin/env zx
 
-await $`npm run build`;
-await Promise.all([$`npm run serve_data`, $`npm run preview`]);
+await $`yarn build`;
+await $`concurrently "yarn preview" "yarn serve_data"`
