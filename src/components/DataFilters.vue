@@ -3,21 +3,14 @@
     <div v-for="(filter, index) in filters" :key="index">
       {{ filter.label }}
       <br />
-      <div
-        style="
+      <div style="
           display: flex;
           justify-content: center;
           align-items: center;
           margin-top: 4px;
-        "
-      >
-        <input
-          :type="filter.type"
-          :ref="filter.type + index"
-          :field-name="filter.field"
-          @change="(ev) => searchValChanged(ev, filter.field)"
-          :value="getValueIfAvailable(filter.field) || ''"
-        />
+        ">
+        <input :type="filter.type" :ref="filter.type + index" :field-name="filter.field"
+          @change="(ev) => searchValChanged(ev, filter.field)" :value="getValueIfAvailable(filter.field) || ''" />
         <button @click="() => removeFilter(filter.type + index)">×</button>
       </div>
     </div>
@@ -45,8 +38,9 @@ export default {
       } else {
         this.filtersObj[fieldName] = value;
       }
+      const { sort, ...prevQueries } = this.$route.query
       this.$router.replace({
-        query: { filter: encodeURI(JSON.stringify(this.filtersObj)) },
+        query: { ...prevQueries, filter: encodeURI(JSON.stringify(this.filtersObj)), },
       });
     },
     removeFilter(refName) {
@@ -124,7 +118,7 @@ button {
     margin-bottom: 12px;
   }
 
-    button {
+  button {
     margin-bottom: 12px;
   }
 }

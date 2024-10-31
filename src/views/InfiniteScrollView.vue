@@ -49,22 +49,19 @@ export default {
   watch: {
     $route() {
       const { sort: key, mode, filter } = this.$route.query;
-      debugger
       try {
         if (filter) this.filterData({ filter: JSON.parse(decodeURI(filter)) });
-      }catch(ex) {
+      } catch (ex) {
         console.log(ex)
       }
-      if (key && mode) {
-        this.sortData({ key, mode });
-      }
+      this.sortData({ key, mode });
     },
   },
   methods: {
     async fetchData() {
       const res = await fetch("http://localhost:8080/persianUsers");
       const data = await res.json();
-      const {data: recivedData} = data
+      const { data: recivedData } = data
       rawData = recivedData;
       filteredData = recivedData;
       this.dataCount = rawData.length
@@ -73,29 +70,28 @@ export default {
       if (filter) {
         this.filterData({ filter: JSON.parse(decodeURI(filter)) });
       }
-      if (key && mode) {
-        this.sortData({ key, mode });
-      }
+      this.sortData({ key, mode });
     },
     sortData({ key, mode }) {
-      const headerIndex = this.headers.findIndex((item) => item.key === key);
-      switch (mode) {
-        case "ASC":
-          this.headers[headerIndex].sortMode = "ASC";
-          filteredData = [...rawData].sort((a, b) =>
-            a[key] < b[key] ? -1 : 1
-          );
-          break;
-        case "null":
-          this.headers[headerIndex].sortMode = null;
-          filteredData = [...rawData];
-          break;
-        case "DEC":
-          this.headers[headerIndex].sortMode = "DEC";
-          filteredData = [...rawData].sort((a, b) =>
-            a[key] < b[key] ? 1 : -1
-          );
-          break;
+      if (!key && !mode) {
+        this.headers = this.headers.map(item => ({ ...item, sortMode: null }))
+        filteredData = rawData
+      } else {
+        const headerIndex = this.headers.findIndex((item) => item.key === key);
+        switch (mode) {
+          case "ASC":
+            this.headers[headerIndex].sortMode = "ASC";
+            filteredData = [...rawData].sort((a, b) =>
+              a[key] < b[key] ? -1 : 1
+            );
+            break;
+          case "DEC":
+            this.headers[headerIndex].sortMode = "DEC";
+            filteredData = [...rawData].sort((a, b) =>
+              a[key] < b[key] ? 1 : -1
+            );
+            break;
+        }
       }
       this.tableData = filteredData.slice(0, this.currentDataLengthShowing);
     },
@@ -119,7 +115,7 @@ export default {
         this.tableData = filteredData.slice(0, this.currentDataLengthShowing);
       }
     },
-    toggleFavRow({ el, item}) {
+    toggleFavRow({ el, item }) {
       let favItemIds = JSON.parse(localStorage.getItem("favRows"));
       if (!favItemIds) {
         favItemIds = {};
@@ -148,24 +144,18 @@ export default {
       <button>صفحه اصلی</button>
     </router-link>
     <DataFilters :filters="filtersArray" />
-    <TheInfiniteDataTable
-      v-if="tableData && tableData.length"
-      :data="tableData"
-      :dataCount="dataCount"
-      :headers="headers"
-      @show-more-data="showMoreData"
-      @toggle-fav-row="toggleFavRow"
-    />
+    <TheInfiniteDataTable v-if="tableData && tableData.length" :data="tableData" :dataCount="dataCount"
+      :headers="headers" @show-more-data="showMoreData" @toggle-fav-row="toggleFavRow" />
   </main>
 </template>
 
 <style scoped>
-  button {
-    background-color: rgba(0, 182, 205, 0.7);
-    border: none;
-    outline: none;
-    padding: 8px;
-    border-radius: 8px;
-    color: rgba(0,0,0,0.7);
-  }
+button {
+  background-color: rgba(0, 182, 205, 0.7);
+  border: none;
+  outline: none;
+  padding: 8px;
+  border-radius: 8px;
+  color: rgba(0, 0, 0, 0.7);
+}
 </style>

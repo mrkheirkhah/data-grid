@@ -1,123 +1,82 @@
 <script>
 import ThePaginatedDataTable from "../components/ThePaginatedDataTable.vue";
 import DataFilters from "../components/DataFilters.vue";
-
-let rawData = [];
-let filteredData = [];
+import DataPagination from "../components/DataPagination.vue";
 
 export default {
-  components: { ThePaginatedDataTable, DataFilters },
+  components: { ThePaginatedDataTable, DataFilters, DataPagination },
   data() {
     return {
       tableData: [],
-      dataCount: 0,
-      dataLengthToShow: 100,
-      currentDataLengthShowing: 100,
+      limit: 5,
+      page: 1,
       headers: [
         { title: "#", sortable: false, key: "index", sortMode: null },
         { title: "#", sortable: false, key: "fav", sortMode: null },
         {
-          title: "نام تغییر دهنده",
+          title: "آیدی",
+          sortable: true,
+          key: "id",
+          sortMode: null,
+        },
+        {
+          title: "نام",
           sortable: true,
           key: "name",
           sortMode: null,
         },
         { title: "تاریخ", sortable: true, key: "date", sortMode: null },
-        { title: "نام آگهی", sortable: true, key: "title", sortMode: null },
-        { title: "فیلد", sortable: true, key: "field", sortMode: null },
-        {
-          title: "مقدار قدیمی",
-          sortable: true,
-          key: "old_value",
-          sortMode: null,
-        },
-        {
-          title: "مقدار جدید",
-          sortable: true,
-          key: "new_value",
-          sortMode: null,
-        },
+        { title: "آدرس", sortable: true, key: "address", sortMode: null },
+        { title: "تلفن", sortable: true, key: "phone", sortMode: null },
       ],
       filtersArray: [
-        { field: "name", type: "text", label: "نام شخص تغییر دهنده" },
+        { field: "id", type: "text", label: "آیدی" },
+        { field: "name", type: "text", label: "نام" },
         { field: "date", type: "date", label: "تاریخ" },
-        { field: "title", type: "text", label: "نام آگهی" },
-        { field: "field", type: "text", label: "فیلد" },
+        { field: "address", type: "text", label: "آدرس" },
+        { field: "phone", type: "text", label: "تلفن" },
       ],
     };
   },
   watch: {
     $route() {
-      const { sort: key, mode, filter } = this.$route.query;
+      const { sort, filter, mode } = this.$route.query;
       try {
-        if (filter) this.filterData({ filter: JSON.parse(decodeURI(filter)) });
-      }catch(ex) {
+        this.updateSortMode(sort, mode)
+        if (filter || sort) this.fetchData();
+      } catch (ex) {
         console.log(ex)
-      }
-      if (key && mode) {
-        this.sortData({ key, mode });
       }
     },
   },
   methods: {
-    async fetchData() {
-      const res = await fetch("http://localhost:8080/foreignUsers");
-      const data = await res.json();
-      rawData = data;
-      filteredData = data;
-      this.dataCount = rawData.length
-      this.tableData = rawData.slice(0, 100);
-      const { sort: key, mode, filter } = this.$route.query;
+    constructFilterAndSorts() {
+      const { sort, mode, filter } = this.$route.query;
+      let filters = {};
       if (filter) {
-        this.filterData({ filter: JSON.parse(decodeURI(filter)) });
+        filters = JSON.parse(decodeURI(filter))
       }
-      if (key && mode) {
-        this.sortData({ key, mode });
+
+      let filterStr = ""
+      let sortStr = ""
+
+      if (sort && mode) {
+        sortStr = `&_sort=${sort}&_order=${mode.toLowerCase()}`
       }
-    },
-    sortData({ key, mode }) {
-      const headerIndex = this.headers.findIndex((item) => item.key === key);
-      switch (mode) {
-        case "ASC":
-          this.headers[headerIndex].sortMode = "ASC";
-          filteredData = [...rawData].sort((a, b) =>
-            a[key] < b[key] ? -1 : 1
-          );
-          break;
-        case "null":
-          this.headers[headerIndex].sortMode = null;
-          filteredData = [...rawData];
-          break;
-        case "DEC":
-          this.headers[headerIndex].sortMode = "DEC";
-          filteredData = [...rawData].sort((a, b) =>
-            a[key] < b[key] ? 1 : -1
-          );
-          break;
+      if (Object.keys(filters).length > 0) {
+        Object.entries(filters).map(([key, val]) => {
+          filterStr += `&${key}_like=${val}`
+        })
       }
-      this.tableData = filteredData.slice(0, this.currentDataLengthShowing);
+
+      return `${sortStr}${filterStr}`
     },
-    showMoreData() {
-      const newDataLength =
-        this.currentDataLengthShowing + this.dataLengthToShow;
-      this.currentDataLengthShowing = newDataLength;
-      this.tableData = filteredData.slice(0, newDataLength);
+    async fetchData() {
+      const res = await fetch(`http://localhost:8080/foreignUsers?_limit=${this.limit}&_page=${this.page}${this.constructFilterAndSorts()}`);
+      const data = await res.json();
+      this.tableData = data
     },
-    filterData({ filter }) {
-      filteredData = rawData
-      if (Object.keys(filter).length < 1) {
-        this.tableData = filteredData.slice(0, this.currentDataLengthShowing);
-        return;
-      } else {
-        for (const key in filter) {
-          filteredData = filteredData.filter((item) => {
-            return item[key].toLowerCase().includes(filter[key].toLowerCase());
-          });
-        }
-        this.tableData = filteredData.slice(0, this.currentDataLengthShowing);
-      }
-    },
-    toggleFavRow({ el, item}) {
+    toggleFavRow({ el, item }) {
       let favItemIds = JSON.parse(localStorage.getItem("favRows"));
       if (!favItemIds) {
         favItemIds = {};
@@ -132,9 +91,32 @@ export default {
       }
 
       localStorage.setItem("favRows", JSON.stringify(favItemIds));
+    },
+    changePagination(newPageNumber) {
+      this.page = newPageNumber;
+      this.fetchData();
+    },
+    changePageSize(newPageSize) {
+      this.limit = newPageSize;
+      this.fetchData();
+    },
+    updateSortMode(sortColumn, mode) {
+      const cloneHeaders = JSON.parse(JSON.stringify(this.headers))
+      this.headers = cloneHeaders.map(item => {
+        if (item.key === sortColumn && mode) {
+          item.sortMode = mode
+        } else {
+          item.sortMode = null
+        }
+        return item
+      })
     }
   },
   created() {
+    const { sort, filter, mode } = this.$route.query;
+    if (sort && mode) {
+      this.updateSortMode(sort, mode)
+    }
     this.fetchData();
   },
 };
@@ -146,24 +128,19 @@ export default {
       <button>صفحه اصلی</button>
     </router-link>
     <DataFilters :filters="filtersArray" />
-    <ThePaginatedDataTable
-      v-if="tableData && tableData.length"
-      :data="tableData"
-      :dataCount="dataCount"
-      :headers="headers"
-      @show-more-data="showMoreData"
-      @toggle-fav-row="toggleFavRow"
-    />
+    <ThePaginatedDataTable v-if="tableData && tableData.length" :data="tableData" :headers="headers"
+      @toggle-fav-row="toggleFavRow" />
+    <DataPagination @changePage="changePagination" @changePageSize="changePageSize" :page="page" :pageSize="limit" />
   </main>
 </template>
 
 <style scoped>
-  button {
-    background-color: rgba(0, 182, 205, 0.7);
-    border: none;
-    outline: none;
-    padding: 8px;
-    border-radius: 8px;
-    color: rgba(0,0,0,0.7);
-  }
+button {
+  background-color: rgba(0, 182, 205, 0.7);
+  border: none;
+  outline: none;
+  padding: 8px;
+  border-radius: 8px;
+  color: rgba(0, 0, 0, 0.7);
+}
 </style>

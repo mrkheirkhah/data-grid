@@ -3,17 +3,11 @@
     <table cellpadding="0" cellspacing="0" border="0">
       <thead>
         <tr>
-          <th
-            v-for="(header, ind) in headers"
-            :class="`${header.sortable ? '' : 'nosort'}`"
-            :key="ind"
-            @click="
-              () =>
-                header.sortable
-                  ? changeSort({ key: header.key, mode: header.sortMode })
-                  : null
-            "
-          >
+          <th v-for="(header, ind) in headers" :class="`${header.sortable ? '' : 'nosort'}`" :key="ind" @click="() =>
+            header.sortable
+              ? changeSort({ key: header.key, mode: header.sortMode })
+              : null
+            ">
             <h3>{{ header.title }}</h3>
             <div v-if="header.sortMode === 'ASC'" class="arrow-up"></div>
             <div v-if="header.sortMode === 'DEC'" class="arrow-down"></div>
@@ -21,25 +15,12 @@
         </tr>
       </thead>
       <tbody>
-        <tr
-          v-for="(item, index) in data"
-          :key="item.id"
-          :class="`${checkIfIsFav(item) ? 'favorite-row' : ''}`"
-        >
+        <tr v-for="(item, index) in data" :key="item.id" :class="`${checkIfIsFav(item) ? 'favorite-row' : ''}`">
           <td>{{ index + 1 }}</td>
           <td>
-            <input
-              type="checkbox"
-              @change="(e) => toggleFavRow(item, e)"
-              :checked="checkIfIsFav(item)"
-            />
+            <input type="checkbox" @change="(e) => toggleFavRow(item, e)" :checked="checkIfIsFav(item)" />
           </td>
-          <td>{{ item.name }}</td>
-          <td>{{ item.date }}</td>
-          <td>{{ item.title }}</td>
-          <td>{{ item.field }}</td>
-          <td>{{ item.old_value }}</td>
-          <td>{{ item.new_value }}</td>
+          <td v-for="(col, index) in headers.slice(2)">{{ item[col.key] }}</td>
         </tr>
         <tr v-if="data.length !== dataCount" ref="lastrow">
           در حال بارگزاری ...
@@ -72,15 +53,16 @@ export default {
   },
   methods: {
     changeSort({ key, mode }) {
+      const { sort: prevSort, mode: prevMode, ...prevQueries } = this.$route.query
       switch (mode) {
         case "ASC":
-          this.$router.replace(`/?sort=${key}&mode=DEC`);
+          this.$router.replace({ query: { ...prevQueries, sort: key, mode: 'DEC' } });
           break;
         case "DEC":
-          this.$router.replace(`/?sort=${key}&mode=null`);
+          this.$router.replace({ query: { ...prevQueries } });
           break;
         case null:
-          this.$router.replace(`/?sort=${key}&mode=ASC`);
+          this.$router.replace({ query: { ...prevQueries, sort: key, mode: 'ASC' } });
           break;
       }
     },
