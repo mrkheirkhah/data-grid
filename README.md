@@ -1,6 +1,6 @@
 # data-grid
 
-This is an interview task requesteed by Yektanet company!!!
+This is an interview task requesteed by Exploria company!!!
 
 ## Run And Preview
 
