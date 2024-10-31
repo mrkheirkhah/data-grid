@@ -74,13 +74,13 @@ export default {
     changeSort({ key, mode }) {
       switch (mode) {
         case "ASC":
-          this.$router.push(`/?sort=${key}&mode=DEC`);
+          this.$router.replace(`/?sort=${key}&mode=DEC`);
           break;
         case "DEC":
-          this.$router.push(`/?sort=${key}&mode=null`);
+          this.$router.replace(`/?sort=${key}&mode=null`);
           break;
         case null:
-          this.$router.push(`/?sort=${key}&mode=ASC`);
+          this.$router.replace(`/?sort=${key}&mode=ASC`);
           break;
       }
     },

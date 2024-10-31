@@ -45,7 +45,7 @@ export default {
       } else {
         this.filtersObj[fieldName] = value;
       }
-      this.$router.push({
+      this.$router.replace({
         query: { filter: encodeURI(JSON.stringify(this.filtersObj)) },
       });
     },
