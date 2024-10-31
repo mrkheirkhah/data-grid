@@ -10,7 +10,7 @@
   "scripts": {
     "dev": "vite",
     "start": "zx ./dev.mjs",
-    "serve_data": "json-server --watch data.json -p 8080",
+    "serve_data": "json-server --watch db.js -p 8080",
     "build": "vite build",
     "preview": "vite preview --port 5050",
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs --fix --ignore-path .gitignore"
